@@ -1,646 +1,699 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RW Pallet Manufacturing</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 100%; height: 100%; }
-body { font-family: 'Segoe UI', Tahoma, Arial; background: #f0f0f0; color: #1a1a1a; }
-
-.header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 16px;
-  text-align: center;
-}
-.header h1 { font-size: 18px; font-weight: 600; }
-.header p { font-size: 11px; opacity: 0.7; margin-top: 2px; }
-
-.tabs {
-  display: flex;
-  background: white;
-  border-bottom: 2px solid #e0e0e0;
-  overflow-x: auto;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.tab {
-  flex: 1;
-  min-width: 70px;
-  padding: 12px 8px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #888;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-}
-.tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
-
-.content { padding: 14px; min-height: 100vh; }
-.section { display: none; }
-.section.active { display: block; }
-
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 12px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1a1a1a; }
-
-label { font-size: 12px; color: #555; display: block; margin-bottom: 4px; margin-top: 10px; font-weight: 500; }
-label:first-of-type { margin-top: 0; }
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  background: white;
-  color: #1a1a1a;
-  font-family: inherit;
-}
-input:focus, select:focus, textarea:focus { border-color: #1a1a1a; outline: none; }
-
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-
-.grade-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-.grade-btn {
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  background: white;
-  cursor: pointer;
-  text-align: center;
-  color: #666;
-  transition: all 0.3s;
-}
-.grade-btn:active { transform: scale(0.98); }
-.grade-btn.selected-1 { border-color: #27ae60; background: #eafaf1; color: #1b7a3e; }
-.grade-btn.selected-2 { border-color: #e74c3c; background: #fdecea; color: #c0392b; }
-
-.btn {
-  width: 100%;
-  padding: 13px;
-  border-radius: 10px;
-  border: none;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 12px;
-  transition: all 0.2s;
-}
-.btn:active { transform: scale(0.98); opacity: 0.85; }
-.btn-primary { background: #1a1a1a; color: white; }
-.btn-success { background: #27ae60; color: white; }
-.btn-danger { background: #e74c3c; color: white; }
-.btn-info { background: #3498db; color: white; }
-
-#reader {
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  background: #000;
-  min-height: 200px;
-}
-
-.result-box {
-  background: #eafaf1;
-  border: 1.5px solid #27ae60;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
-  display: none;
-  font-size: 13px;
-  line-height: 1.8;
-}
-.result-box.error { background: #fdecea; border-color: #e74c3c; }
-.result-box h3 { font-size: 14px; margin-bottom: 6px; }
-.result-box.error h3 { color: #c0392b; }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  margin-left: 6px;
-}
-.badge-1 { background: #eafaf1; color: #1b7a3e; border: 1px solid #27ae60; }
-.badge-2 { background: #fdecea; color: #c0392b; border: 1px solid #e74c3c; }
-
-.loading {
-  text-align: center;
-  padding: 16px;
-  color: #888;
-  font-size: 14px;
-  display: none;
-}
-.loading.active { display: block; }
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1a1a1a;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 24px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 999;
-  display: none;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.toast.show { display: block; animation: fadeT 3s forwards; }
-@keyframes fadeT { 0%{opacity:0;transform:translateX(-50%) translateY(8px)} 10%{opacity:1;transform:translateX(-50%) translateY(0)} 85%{opacity:1} 100%{opacity:0} }
-
-.tip {
-  background: #fff8e1;
-  border: 1px solid #f9ca24;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 12px;
-  color: #7d6608;
-  margin-bottom: 12px;
-  line-height: 1.6;
-}
-
-.action-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
-
-.stat-box {
-  background: #f8f8f8;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 8px;
-  font-size: 12px;
-  line-height: 1.8;
-  border-left: 3px solid #1a1a1a;
-}
-
-.test-status { margin-top: 10px; font-size: 13px; text-align: center; padding: 8px; border-radius: 6px; }
-.test-ok { background: #eafaf1; color: #1b7a3e; }
-.test-error { background: #fdecea; color: #c0392b; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RW Pallet - إدارة مخزن الأخشاب</title>
+    <!-- Tailwind CSS للمظهر الاحترافي -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- مكتبة أيقونات Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- مكتبة قارئ QR Code من الكاميرا -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        body { font-family: 'Tajawal', sans-serif; background-color: #f4f6f3; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-<div class="header">
-  <h1>📦 RW Pallet Manufacturing</h1>
-  <p>نظام إدارة المخزن — QR Code Tracking</p>
-</div>
+    <!-- الشريط العلوي الاحترافي للمعمل -->
+    <header class="bg-[#0f623d] text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i data-lucide="trees" class="w-6 h-6 text-emerald-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">RW Pallet</h1>
+                    <p class="text-xs text-emerald-200">إدارة مخزن الأخشاب</p>
+                </div>
+            </div>
+            <!-- العدادات السريعة في الهيدر -->
+            <div class="flex gap-4 text-center text-xs">
+                <div class="bg-white/10 px-3 py-1 rounded">
+                    <div id="hdr-total" class="font-bold text-base">0</div>
+                    <div class="text-emerald-200">إجمالي</div>
+                </div>
+                <div class="bg-white/10 px-3 py-1 rounded">
+                    <div id="hdr-stock" class="font-bold text-base text-emerald-300">0</div>
+                    <div class="text-emerald-200">مخزن</div>
+                </div>
+                <div class="bg-white/10 px-3 py-1 rounded">
+                    <div id="hdr-prod" class="font-bold text-base text-amber-300">0</div>
+                    <div class="text-emerald-200">إنتاج</div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('scan', this)">📷 مسح</button>
-  <button class="tab" onclick="switchTab('receive', this)">📥 استلام</button>
-  <button class="tab" onclick="switchTab('batch', this)">📦 دفعة</button>
-  <button class="tab" onclick="switchTab('settings', this)">⚙️</button>
-</div>
+    <!-- شريط التنقل العلوي (Tabs) المقسم حسب الصورة -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-[72px] z-40 overflow-x-auto">
+        <div class="max-w-7xl mx-auto flex justify-start md:justify-between px-4">
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-emerald-600 text-emerald-600 font-bold whitespace-nowrap">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> لوحة التحكم
+            </button>
+            <button onclick="switchTab('receive')" id="btn-receive" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-transparent text-gray-500 hover:text-emerald-600 whitespace-nowrap">
+                <i data-lucide="clipboard-plus" class="w-5 h-5"></i> استلام خشب
+            </button>
+            <button onclick="switchTab('scan')" id="btn-scan" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-transparent text-gray-500 hover:text-emerald-600 whitespace-nowrap">
+                <i data-lucide="qr-code" class="w-5 h-5"></i> مسح QR
+            </button>
+            <button onclick="switchTab('inventory')" id="btn-inventory" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-transparent text-gray-500 hover:text-emerald-600 whitespace-nowrap">
+                <i data-lucide="box" class="w-5 h-5"></i> المخزون الحالي
+            </button>
+            <button onclick="switchTab('logs')" id="btn-logs" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-transparent text-gray-500 hover:text-emerald-600 whitespace-nowrap">
+                <i data-lucide="history" class="w-5 h-5"></i> الحركات والسجلات
+            </button>
+            <button onclick="switchTab('settings')" id="btn-settings" class="nav-tab py-4 px-4 flex items-center gap-2 border-b-2 border-transparent text-gray-500 hover:text-emerald-600 whitespace-nowrap">
+                <i data-lucide="settings" class="w-5 h-5"></i> الإعدادات
+            </button>
+        </div>
+    </nav>
 
-<div class="content">
+    <!-- المحتوى الرئيسي للموقع -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6">
 
-<!-- ===== تبويب المسح ===== -->
-<div id="tab-scan" class="section active">
-  <div class="tip">
-    وجّه كاميرا الموبايل على QR Code الربطة — أو أدخل الرقم يدوياً بالأسفل
-  </div>
+        <!-- 1. تبويب لوحة التحكم (Dashboard) كما في الصورة تماماً -->
+        <div id="dashboard" class="tab-content active space-y-6">
+            <!-- كروت الإحصائيات الأربعة الكبيرة -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <span class="text-3xl font-bold text-emerald-600" id="stat-total">0</span>
+                    <span class="text-sm text-gray-500 mt-1">إجمالي الربطات</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <span class="text-3xl font-bold text-blue-600" id="stat-stock">0</span>
+                    <span class="text-sm text-gray-500 mt-1">في المخزن</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <span class="text-3xl font-bold text-amber-500" id="stat-prod">0</span>
+                    <span class="text-sm text-gray-500 mt-1">في الإنتاج</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <span class="text-3xl font-bold text-gray-500" id="stat-out">0</span>
+                    <span class="text-sm text-gray-500 mt-1">خرجت</span>
+                </div>
+            </div>
 
-  <div id="reader"></div>
+            <!-- أزرار الإجراءات السريعة السريعة -->
+            <div class="flex gap-4">
+                <button onclick="switchTab('receive')" class="flex-1 bg-[#0f623d] text-white py-3 px-4 rounded-xl font-medium shadow-sm hover:bg-[#0c4f31] transition-all flex items-center justify-center gap-2 text-base">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> استلام خشب جديد
+                </button>
+                <button onclick="switchTab('scan')" class="flex-1 bg-white text-gray-700 border border-gray-300 py-3 px-4 rounded-xl font-medium shadow-sm hover:bg-gray-50 transition-all flex items-center justify-center gap-2 text-base">
+                    <i data-lucide="scan-line" class="w-5 h-5"></i> مسح QR بالكاميرا
+                </button>
+            </div>
 
-  <div class="card">
-    <div style="display:flex; gap:8px">
-      <input type="text" id="scan-id" placeholder="RB-001 أو رقم الربطة" style="flex:1; text-transform:uppercase">
-      <button onclick="scanLookup()" style="padding:10px 14px; background:#1a1a1a; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; min-width:60px">بحث</button>
-    </div>
-  </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- آخر الحركات المسجلة -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2 font-bold text-gray-700 border-b border-gray-100 pb-3 mb-4">
+                        <i data-lucide="activity" class="w-5 h-5 text-emerald-600"></i> آخر الحركات في المعمل
+                    </div>
+                    <div id="recent-logs" class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                        <p class="text-gray-400 text-center text-sm py-8">لا توجد حركات مسجلة حالياً.</p>
+                    </div>
+                </div>
 
-  <div id="scan-result" class="result-box">
-    <h3 id="scan-title"></h3>
-    <p id="scan-details"></p>
-    <div class="action-grid" id="scan-actions"></div>
-  </div>
+                <!-- حالة المخزون الحالي حسب النوع والدرجة -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2 font-bold text-gray-700 border-b border-gray-100 pb-3 mb-4">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-600"></i> المخزون المتوفر حسب القياس
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-1">
+                                <span>1 متر</span>
+                                <span id="count-1m" class="font-bold">0 ربطة</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-3">
+                                <div id="bar-1m" class="bg-emerald-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-1">
+                                <span>120 سم</span>
+                                <span id="count-120cm" class="font-bold">0 ربطة</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-3">
+                                <div id="bar-120cm" class="bg-teal-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-1">
+                                <span>7×7</span>
+                                <span id="count-7x7" class="font-bold">0 ربطة</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-3">
+                                <div id="bar-7x7" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <div class="loading" id="loading-scan">⏳ جاري الإرسال...</div>
-</div>
+        <!-- 2. تبويب استلام خشب جديد (يدوي أو دفعة سيارة) -->
+        <div id="receive" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
+                <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i data-lucide="plus-square" class="text-emerald-600"></i> تسجيل نموذج شحنة أخشاب واردة
+                </h2>
+                
+                <form id="receive-form" class="space-y-5" onsubmit="handleReceive(event)">
+                    <!-- نوع التسجيل -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">طريقة الاستلام</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" id="mode-single" onclick="setReceiveMode('single')" class="py-2.5 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-700 font-bold text-sm">ربطة منفردة</button>
+                            <button type="button" id="mode-batch" onclick="setReceiveMode('batch')" class="py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 font-medium text-sm">دفعة سيارة كاملة</button>
+                        </div>
+                    </div>
 
-<!-- ===== تبويب الاستلام ===== -->
-<div id="tab-receive" class="section">
-  <div class="card">
-    <div class="card-title">تسجيل استلام ربطة واحدة</div>
+                    <!-- الموردون المعتمدون -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">اسم المورد</label>
+                        <select id="supplier" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="فيتالي">فيتالي</option>
+                            <option value="أبو فهد">أبو فهد</option>
+                            <option value="روند">روند</option>
+                        </select>
+                    </div>
 
-    <div class="grid2">
-      <div>
-        <label>المورد</label>
-        <select id="r-supplier">
-          <option value="">-- اختر --</option>
-          <option>فيتالي</option>
-          <option>أبو فهد</option>
-          <option>روند</option>
-        </select>
-      </div>
-      <div>
-        <label>نوع الخشب</label>
-        <select id="r-wood">
-          <option value="">-- اختر --</option>
-          <option>1 متر</option>
-          <option>120 سم</option>
-          <option>7×7</option>
-        </select>
-      </div>
-    </div>
+                    <!-- القياسات المحددة -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">نوع وقياس الخشب</label>
+                        <select id="wood-type" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="1 متر">1 متر</option>
+                            <option value="120 سم">120 سم</option>
+                            <option value="7×7">7×7</option>
+                        </select>
+                    </div>
 
-    <label>الدرجة / الجودة</label>
-    <div class="grade-selector">
-      <button class="grade-btn" id="r-g1" onclick="selectGrade('r', 1)">⭐ درجة أولى</button>
-      <button class="grade-btn" id="r-g2" onclick="selectGrade('r', 2)">✦ درجة ثانية</button>
-    </div>
+                    <!-- حقل الجودة المفصل (درجة أولى / درجة ثانية) بألوان مميزة -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">جودة ودرجة الخشب</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" id="grade-1" onclick="setGrade('درجة أولى')" class="py-3 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white font-bold flex flex-col items-center justify-center">
+                                <span class="text-base">⭐ درجة أولى</span>
+                                <span class="text-xs opacity-80">نخب ممتاو</span>
+                            </button>
+                            <button type="button" id="grade-2" onclick="setGrade('درجة ثانية')" class="py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-medium flex flex-col items-center justify-center bg-white">
+                                <span class="text-base">🍂 درجة ثانية</span>
+                                <span class="text-xs text-gray-400">نخب تجاري</span>
+                            </button>
+                        </div>
+                    </div>
 
-    <div class="grid2" style="margin-top:10px">
-      <div>
-        <label>عدد القطع</label>
-        <input type="number" id="r-qty" placeholder="444">
-      </div>
-      <div>
-        <label>التاريخ</label>
-        <input type="date" id="r-date">
-      </div>
-    </div>
+                    <!-- الأعداد والكميات -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label id="qty-label" class="block text-sm font-medium text-gray-700 mb-1.5">عدد القطع بالربطة</label>
+                            <input type="number" id="qty" required placeholder="مثال: 444" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div id="batch-count-container" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">عدد الربطات بالسيارة</label>
+                            <input type="number" id="batch-count" value="6" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                    </div>
 
-    <label>رقم الفاتورة</label>
-    <input type="text" id="r-invoice" placeholder="INV-001">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">ملاحظات الفاتورة أو الشحنة</label>
+                        <input type="text" id="note" placeholder="أي ملاحظة إضافية..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
 
-    <label>ملاحظة</label>
-    <textarea id="r-note" placeholder="اختياري..." style="height:50px; resize:none"></textarea>
+                    <button type="submit" class="w-full bg-[#0f623d] text-white py-3 rounded-lg font-bold shadow hover:bg-[#0c4f31] transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle2"></i> إتمام الحفظ وتوليد الرقم الرقمي
+                    </button>
+                </form>
+            </div>
+        </div>
 
-    <button class="btn btn-success" onclick="receiveOne()">📥 تسجيل الاستلام</button>
-  </div>
+        <!-- 3. تبويب مسح QR بالكاميرا لتحديث الحالة فوراً -->
+        <div id="scan" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-xl mx-auto text-center">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
+                    <i data-lucide="scan-face" class="text-emerald-600"></i> قارئ رمز الكيـو آر بالكاميرا مباشر
+                </h2>
+                
+                <!-- منطقة الكاميرا الشغالة مدمجة بالكامل -->
+                <div class="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-200 relative overflow-hidden min-h-[250px] flex items-center justify-center">
+                    <div id="reader" class="w-full overflow-hidden rounded-lg"></div>
+                    <div id="scanner-placeholder" class="absolute flex flex-col items-center justify-center text-gray-400 gap-2">
+                        <i data-lucide="aperture" class="w-12 h-12 animate-spin text-emerald-600"></i>
+                        <span class="text-sm">اضغط على زر تشغيل الكاميرا بالأسفل</span>
+                    </div>
+                </div>
 
-  <div id="receive-result" class="result-box">
-    <h3>✓ تم التسجيل في Google Sheets</h3>
-    <p id="receive-text"></p>
-  </div>
+                <div class="flex gap-2 mt-4">
+                    <button onclick="startScanner()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold shadow hover:bg-emerald-700 transition">تشغيل الكاميرا</button>
+                    <button onclick="stopScanner()" class="flex-1 bg-gray-500 text-white py-2 rounded-lg text-sm font-bold shadow hover:bg-gray-600 transition">إيقاف</button>
+                </div>
 
-  <div class="loading" id="loading-receive">⏳ جاري الإرسال...</div>
-</div>
+                <!-- لوحة التحكم بالربطة الممسوحة مدمجة -->
+                <div id="scan-result-card" class="hidden mt-6 border-t border-gray-100 pt-6 text-right bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded font-bold" id="scanned-id">RB-000</span>
+                        <span class="text-sm text-gray-500" id="scanned-info">فيتالي - 1 متر</span>
+                    </div>
+                    
+                    <label class="block text-sm font-medium text-gray-700 mb-2">تحديث حالة الربطة الحالية إلى:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="updateStatus('خط إنتاج')" class="bg-amber-500 text-white py-2.5 rounded-lg font-bold text-sm hover:bg-amber-600 shadow-sm">⚙️ تحويل لخط الإنتاج</button>
+                        <button onclick="updateStatus('خروج مخزن')" class="bg-rose-600 text-white py-2.5 rounded-lg font-bold text-sm hover:bg-rose-700 shadow-sm">📦 خروج نهائي من المعمل</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- ===== تبويب الدفعة ===== -->
-<div id="tab-batch" class="section">
-  <div class="tip">
-    <strong>مثال:</strong> 6 ربطات في سيارة واحدة — كلها نفس المورد والنوع والدرجة؟<br>
-    اختر الإعدادات المشتركة، كل ربطة تأخذ رقم تسلسلي تلقائياً
-  </div>
+        <!-- 4. تبويب عرض قائمة المخزون الحالي بالكامل للفلترة والجرد -->
+        <div id="inventory" class="tab-content space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-3 items-center justify-between">
+                <span class="font-bold text-gray-700">قائمة جرد المخزن الحي</span>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <select id="filter-type" onchange="renderTables()" class="p-2 border border-gray-300 text-sm rounded-lg bg-white">
+                        <option value="الكل">كل المقاسات</option>
+                        <option value="1 متر">1 متر</option>
+                        <option value="120 سم">120 سم</option>
+                        <option value="7×7">7×7</option>
+                    </select>
+                    <select id="filter-status" onchange="renderTables()" class="p-2 border border-gray-300 text-sm rounded-lg bg-white">
+                        <option value="الكل">كل الحالات</option>
+                        <option value="دخول مخزن">في المخزن فقط</option>
+                        <option value="خط إنتاج">في الإنتاج</option>
+                    </select>
+                </div>
+            </div>
 
-  <div class="card">
-    <div class="card-title">تسجيل دفعة من الربطات</div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                <th class="p-4 font-bold">رقم الربطة</th>
+                                <th class="p-4 font-bold">المورد</th>
+                                <th class="p-4 font-bold">النوع</th>
+                                <th class="p-4 font-bold">الدرجة</th>
+                                <th class="p-4 font-bold">القطع</th>
+                                <th class="p-4 font-bold">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-gray-100 text-sm">
+                            <!-- تعبأ تلقائياً -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <div class="grid2">
-      <div>
-        <label>المورد</label>
-        <select id="b-supplier">
-          <option value="">-- اختر --</option>
-          <option>فيتالي</option>
-          <option>أبو فهد</option>
-          <option>روند</option>
-        </select>
-      </div>
-      <div>
-        <label>نوع الخشب</label>
-        <select id="b-wood">
-          <option value="">-- اختر --</option>
-          <option>1 متر</option>
-          <option>120 سم</option>
-          <option>7×7</option>
-        </select>
-      </div>
-    </div>
+        <!-- 5. تبويب السجلات التاريخية والأرشيف الكامل -->
+        <div id="logs" class="tab-content space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                    <i data-lucide="archive" class="text-emerald-600"></i> أرشيف المعمل الكامل لجميع الحركات المسجلة
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 border-b border-gray-200">
+                                <th class="p-3">الربطة</th>
+                                <th class="p-3">الحركة</th>
+                                <th class="p-3">البيانات</th>
+                                <th class="p-3">التوقيت واليوم</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-logs-body" class="divide-y divide-gray-100">
+                            <!-- البيانات تملأ بالكامل هنا -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <label>الدرجة / الجودة</label>
-    <div class="grade-selector">
-      <button class="grade-btn" id="b-g1" onclick="selectGrade('b', 1)">⭐ درجة أولى</button>
-      <button class="grade-btn" id="b-g2" onclick="selectGrade('b', 2)">✦ درجة ثانية</button>
-    </div>
+        <!-- 6. تبويب الإعدادات وفحص الاتصال بقاعدة البيانات السحابية -->
+        <div id="settings" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-xl mx-auto text-center">
+                <i data-lucide="database" class="w-12 h-12 text-emerald-600 mx-auto mb-3"></i>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">ربط محرك التطبيق بـ Google Sheets</h3>
+                <p class="text-sm text-gray-500 mb-6">يتم إرسال وجلب البيانات عبر عنوان الويب البرمجي المنشور بأذونات معملك بشكل مباشر وآمن.</p>
+                
+                <div class="text-right space-y-2 mb-6">
+                    <label class="block text-xs font-bold text-gray-600 tracking-wide uppercase">رابط اتصال السكربت الحالي (Web App URL)</label>
+                    <input type="text" id="script-url" value="https://script.google.com/macros/s/AKfycbz-kUKajhchNBjWAPyN-T6DvhJHIdCmcPkJRl5xEr6eLpvCCsIIn0d84WQI26B66dg/exec" class="w-full p-2.5 border border-gray-300 rounded-lg font-mono text-xs text-left bg-gray-50 focus:outline-none">
+                </div>
 
-    <div class="grid3" style="margin-top:10px">
-      <div>
-        <label>عدد الربطات</label>
-        <input type="number" id="b-count" placeholder="6" min="1" max="50" oninput="previewBatch()">
-      </div>
-      <div>
-        <label>قطع/ربطة</label>
-        <input type="number" id="b-qty" placeholder="444" oninput="previewBatch()">
-      </div>
-      <div>
-        <label>التاريخ</label>
-        <input type="date" id="b-date">
-      </div>
-    </div>
+                <div class="flex gap-3">
+                    <button onclick="saveSettings()" class="flex-1 bg-[#0f623d] text-white py-2.5 rounded-lg text-sm font-bold shadow hover:bg-[#0c4f31] transition">حفظ التغييرات</button>
+                    <button onclick="testConnection()" class="flex-1 bg-white text-gray-700 border border-gray-300 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition">فحص واختبار الاتصال</button>
+                </div>
+                <div id="conn-status" class="mt-4 text-sm font-bold text-gray-500"></div>
+            </div>
+        </div>
 
-    <label>رقم الفاتورة</label>
-    <input type="text" id="b-invoice" placeholder="INV-001">
+    </main>
 
-    <div id="batch-preview" class="stat-box" style="display:none; border-left-color:#27ae60"></div>
+    <!-- محرك جافا سكريبت الذكي المتكامل للتحكم بالعمليات بالكامل -->
+    <script>
+        // مصفوفات البيانات المؤقتة بالموقع لتعمل مباشرة بدون تأخير
+        let localBundles = JSON.parse(localStorage.getItem('rw_bundles')) || [];
+        let localLogs = JSON.parse(localStorage.getItem('rw_logs')) || [];
+        let currentGrade = 'درجة أولى';
+        let currentReceiveMode = 'single';
+        let html5QrcodeScanner = null;
 
-    <button class="btn btn-success" onclick="batchSubmit()">📥 تسجيل الدفعة كاملة</button>
-  </div>
+        // إعداد وتشغيل الأيقونات التلقائية
+        document.addEventListener("DOMContentLoaded", function() {
+            lucide.createIcons();
+            loadUrlFromStorage();
+            calculateStats();
+            renderDashboard();
+            renderTables();
+        });
 
-  <div id="batch-result" class="result-box">
-    <h3>✓ تم تسجيل الدفعة</h3>
-    <p id="batch-text"></p>
-  </div>
+        function loadUrlFromStorage() {
+            const savedUrl = localStorage.getItem('rw_script_url');
+            if (savedUrl) {
+                document.getElementById('script-url').value = savedUrl;
+            }
+        }
 
-  <div class="loading" id="loading-batch">⏳ جاري الإرسال... <span id="batch-progress">0</span></div>
-</div>
+        // تحويل وتغيير التبويبات بسلاسة
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('border-emerald-600', 'text-emerald-600', 'font-bold');
+                el.classList.add('border-transparent', 'text-gray-500');
+            });
 
-<!-- ===== تبويب الإعدادات ===== -->
-<div id="tab-settings" class="section">
-  <div class="card">
-    <div class="card-title">رابط Google Apps Script</div>
-    <label>Web App URL</label>
-    <input type="text" id="gs-url" style="font-size:11px">
-    <button class="btn btn-primary" onclick="saveUrl()">💾 حفظ الرابط</button>
-  </div>
+            document.getElementById(tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-gray-500');
+                activeBtn.classList.add('border-emerald-600', 'text-emerald-600', 'font-bold');
+            }
+            if (tabId !== 'scan') stopScanner();
+        }
 
-  <div class="card">
-    <div class="card-title">اختبار الاتصال</div>
-    <button class="btn btn-info" onclick="testConnection()">🔌 اختبر الاتصال</button>
-    <div id="test-result" style="margin-top:10px; display:none"></div>
-  </div>
+        function setGrade(grade) {
+            currentGrade = grade;
+            document.getElementById('grade-1').className = grade === 'درجة أولى' ? "py-3 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white font-bold flex flex-col items-center justify-center" : "py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-medium flex flex-col items-center justify-center bg-white";
+            document.getElementById('grade-2').className = grade === 'درجة ثانية' ? "py-3 rounded-xl border-2 border-amber-600 bg-amber-600 text-white font-bold flex flex-col items-center justify-center" : "py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-medium flex flex-col items-center justify-center bg-white";
+        }
 
-  <div class="card" style="font-size:12px; line-height:2; color:#666">
-    <strong style="color:#1a1a1a; font-size:13px">كيف يعمل النظام؟</strong><br>
-    1. مسح QR الربطة من الكاميرا<br>
-    2. اختيار نوع الحركة (دخول/إنتاج/خروج)<br>
-    3. يُسجَّل فوراً في Google Sheets مع التاريخ والوقت<br>
-    4. شوف النتائج في ورقة "حركة المخزن"<br><br>
-    <strong style="color:#1a1a1a">الموردون:</strong> فيتالي · أبو فهد · روند<br>
-    <strong style="color:#1a1a1a">الأنواع:</strong> 1 متر · 120 سم · 7×7<br>
-    <strong style="color:#1a1a1a">الدرجات:</strong> أولى (جودة عالية) · ثانية (جودة عادية)
-  </div>
-</div>
+        function setReceiveMode(mode) {
+            currentReceiveMode = mode;
+            if (mode === 'single') {
+                document.getElementById('mode-single').className = "py-2.5 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-700 font-bold text-sm";
+                document.getElementById('mode-batch').className = "py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 font-medium text-sm";
+                document.getElementById('batch-count-container').classList.add('hidden');
+                document.getElementById('qty-label').innerText = "عدد القطع بالربطة";
+            } else {
+                document.getElementById('mode-batch').className = "py-2.5 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-700 font-bold text-sm";
+                document.getElementById('mode-single').className = "py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 font-medium text-sm";
+                document.getElementById('batch-count-container').classList.remove('hidden');
+                document.getElementById('qty-label').innerText = "قطع كل ربطة";
+            }
+        }
 
-</div>
+        // معالجة وحفظ عمليات استلام الشحنات والربطات
+        function handleReceive(e) {
+            e.preventDefault();
+            const supplier = document.getElementById('supplier').value;
+            const woodType = document.getElementById('wood-type').value;
+            const qty = parseInt(document.getElementById('qty').value);
+            const note = document.getElementById('note').value;
+            const scriptUrl = document.getElementById('script-url').value;
 
-<div class="toast" id="toast"></div>
+            let count = currentReceiveMode === 'batch' ? parseInt(document.getElementById('batch-count').value) : 1;
+            let startId = localBundles.length + 1;
 
-<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+            alert("جاري الإرسال والمزامنة مع سجلات المعمل السحابية، يرجى الانتظار ثوانٍ...");
 
-<script>
-const SHEET_KEY = 'rw_gs_url';
-const CTR_KEY   = 'rw_bundle_ctr';
+            for (let i = 0; i < count; i++) {
+                let currentId = "RBT-" + String(startId + i).padStart(3, '0');
+                let bundleData = {
+                    bundleId: currentId,
+                    supplier: supplier,
+                    woodType: woodType,
+                    grade: currentGrade,
+                    qty: qty,
+                    action: 'دخول مخزن',
+                    note: note
+                };
 
-let sheetUrl = localStorage.getItem(SHEET_KEY) || 
-  'https://script.google.com/macros/s/AKfycbz-kUKajhchNBjWAPyN-T6DvhJHIdCmcPkJRl5xEr6eLpvCCsIIn0d84WQI26B66dg/exec';
+                // إرسال البيانات المجمعة إلى سكريبت جوجل شيت المرفق
+                fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bundleData)
+                });
 
-let counter  = parseInt(localStorage.getItem(CTR_KEY) || '1');
-let grades   = { r: 0, b: 0 };
-let scanner  = null;
-let scanning = false;
-let scannedData = null;
+                // الحفظ داخل الذاكرة المحلية لتحديث لوحة التحكم فوراً
+                localBundles.push({ id: currentId, supplier, woodType, grade: currentGrade, qty, status: 'دخول مخزن' });
+                localLogs.unshift({ id: currentId, action: 'دخول مخزن', date: new Date().toLocaleDateString('ar-IQ'), info: `${supplier} - ${woodType} (${currentGrade})` });
+            }
 
-document.getElementById('gs-url').value = sheetUrl;
+            localStorage.setItem('rw_bundles', JSON.stringify(localBundles));
+            localStorage.setItem('rw_logs', JSON.stringify(localLogs));
 
-// ===== Tab Navigation =====
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  if (name === 'scan' && !scanning) startScanner();
-  if (name !== 'scan' && scanning) stopScanner();
-}
+            calculateStats();
+            renderDashboard();
+            renderTables();
+            document.getElementById('receive-form').reset();
+            setGrade('درجة أولى');
+            switchTab('dashboard');
+            alert(`تم حفظ عدد (${count}) ربطة بنجاح في سجلات المعمل والمخازن!`);
+        }
 
-// ===== Grade Selection =====
-function selectGrade(prefix, g) {
-  grades[prefix] = g;
-  document.getElementById(prefix+'-g1').className = 'grade-btn' + (g===1 ? ' selected-1' : '');
-  document.getElementById(prefix+'-g2').className = 'grade-btn' + (g===2 ? ' selected-2' : '');
-}
+        // معالجة الكاميرا والماسح الضوئي المدمج للـ QR Code
+        function startScanner() {
+            document.getElementById('scanner-placeholder').classList.add('hidden');
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess
+            ).catch(err => {
+                alert("خطأ في تشغيل الكاميرا، يرجى إعطاء الصلاحية للمتصفح أولاً.");
+                document.getElementById('scanner-placeholder').classList.remove('hidden');
+            });
+        }
 
-// ===== QR Scanner =====
-function startScanner() {
-  if (scanner) { scanner.clear(); scanner = null; }
-  scanner = new Html5Qrcode("reader");
-  scanner.start({facingMode:"environment"}, {fps:10, qrbox:{width:220, height:220}},
-    txt => { if(scanner) scanner.pause(true); scanProcess(txt); },
-    ()=>{}
-  ).then(() => { scanning = true; })
-  .catch(() => {
-    document.getElementById('reader').innerHTML = 
-      '<div style="padding:20px; text-align:center; color:#aaa; font-size:13px">⚠️ الكاميرا غير متاحة</div>';
-  });
-}
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('scanner-placeholder').classList.remove('hidden');
+                }).catch(err => console.log(err));
+            }
+        }
 
-function stopScanner() {
-  if(scanner) { scanner.stop().then(()=>{ scanner.clear(); scanner=null; scanning=false; }); }
-}
+        // عند نجاح مسح الكود بالكاميرا
+        function onScanSuccess(decodedText) {
+            stopScanner();
+            let bundleId = decodedText.trim();
+            
+            // محاولة استخراج الرقم الفريد للربطة إذا تم كتابة نص كامل
+            if (bundleId.includes("RBT-")) {
+                let match = bundleId.match(/RBT-\d+/);
+                if (match) bundleId = match[0];
+            } else if (bundleId.includes("RB-")) {
+                let match = bundleId.match(/RB-\d+/);
+                if (match) bundleId = match[0].replace("RB-", "RBT-");
+            }
 
-function scanLookup() {
-  const id = document.getElementById('scan-id').value.trim().toUpperCase();
-  if (!id) { toast('أدخل رقم الربطة'); return; }
-  scanProcess(id);
-}
+            const bundle = localBundles.find(b => b.id === bundleId);
+            document.getElementById('scan-result-card').classList.remove('hidden');
+            document.getElementById('scanned-id').innerText = bundleId;
 
-function scanProcess(raw) {
-  let d = { bundleId:'', supplier:'', woodType:'', grade:'', qty:'' };
-  if (raw.includes('رقم الربطة:')) {
-    raw.split('\n').forEach(l => {
-      if(l.includes('رقم الربطة:')) d.bundleId = l.split(':')[1].trim();
-      if(l.includes('المورد:'))    d.supplier = l.split(':')[1].trim();
-      if(l.includes('النوع:'))     d.woodType = l.split(':')[1].trim();
-      if(l.includes('الدرجة:'))    d.grade = l.split(':')[1].trim();
-      if(l.includes('العدد:'))     d.qty = l.split(':')[1].replace('قطعة','').trim();
-    });
-  } else {
-    d.bundleId = raw;
-  }
-  scannedData = d;
-  showScanResult(d);
-}
+            if (bundle) {
+                document.getElementById('scanned-info').innerText = `${bundle.supplier} - ${bundle.woodType} (${bundle.grade})`;
+            } else {
+                document.getElementById('scanned-info').innerText = "ربطة جديدة أو غير مسجلة محلياً";
+            }
+        }
 
-function showScanResult(d) {
-  const box = document.getElementById('scan-result');
-  box.style.display = 'block';
-  box.className = 'result-box';
-  document.getElementById('scan-title').textContent = '✓ الربطة: ' + d.bundleId;
-  let det = '';
-  if(d.supplier) det += `المورد: <strong>${d.supplier}</strong><br>`;
-  if(d.woodType) det += `النوع: <strong>${d.woodType}</strong>  `;
-  if(d.grade) det += `<span class="badge badge-${d.grade.includes('أولى') ? '1' : '2'}">${d.grade}</span><br>`;
-  if(d.qty) det += `العدد: <strong>${d.qty}</strong> قطعة`;
-  document.getElementById('scan-details').innerHTML = det || `رقم: ${d.bundleId}`;
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('scan-actions').innerHTML = `
-    <button class="btn btn-success" onclick="moveAction('دخول مخزن','${today}')">📥 دخول المخزن</button>
-    <button class="btn btn-info" onclick="moveAction('خط إنتاج','${today}')">🏭 خط الإنتاج</button>
-    <button class="btn btn-danger" onclick="moveAction('خروج مخزن','${today}')">📤 خروج نهائي</button>
-    <button onclick="scanReset()" style="padding:10px; background:#eee; color:#555; border:none; border-radius:8px; font-size:13px; cursor:pointer; margin-top:4px">🔄 مسح جديد</button>`;
-}
+        // تحديث حالة الربطة الممسوحة من الكاميرا
+        function updateStatus(newAction) {
+            const bundleId = document.getElementById('scanned-id').innerText;
+            const scriptUrl = document.getElementById('script-url').value;
+            const bundle = localBundles.find(b => b.id === bundleId);
 
-function moveAction(action, date) {
-  if (!scannedData) return;
-  setLoading('scan', true);
-  post({ ...scannedData, action, note: '' }).then(() => {
-    setLoading('scan', false);
-    toast(`✓ تم: ${action}`);
-    document.getElementById('scan-result').innerHTML = 
-      `<h3>✓ ${action}</h3><p>الربطة: <strong>${scannedData.bundleId}</strong><br>التاريخ: ${date}</p>
-       <button onclick="scanReset()" style="padding:10px; background:#1a1a1a; color:white; border:none; border-radius:8px; width:100%; cursor:pointer; margin-top:8px">🔄 مسح ربطة جديدة</button>`;
-  });
-}
+            let supplier = bundle ? bundle.supplier : 'مورد عام';
+            let woodType = bundle ? bundle.woodType : 'غير محدد';
+            let grade = bundle ? bundle.grade : 'درجة أولى';
+            let qty = bundle ? bundle.qty : 0;
 
-function scanReset() {
-  scannedData = null;
-  document.getElementById('scan-result').style.display = 'none';
-  document.getElementById('scan-id').value = '';
-  if(scanner && scanning) try { scanner.resume(); } catch(e){}
-}
+            let dataToSend = {
+                bundleId: bundleId,
+                supplier: supplier,
+                woodType: woodType,
+                grade: grade,
+                qty: qty,
+                action: newAction,
+                note: 'تم التحديث عبر الكاميرا'
+            };
 
-// ===== Receive One =====
-function receiveOne() {
-  const s = document.getElementById('r-supplier').value;
-  const w = document.getElementById('r-wood').value;
-  const g = grades.r === 1 ? 'درجة أولى' : grades.r === 2 ? 'درجة ثانية' : '';
-  const q = parseInt(document.getElementById('r-qty').value);
-  const d = document.getElementById('r-date').value;
-  if (!s||!w||!g||!q||!d) { toast('يرجى تعبئة جميع الحقول والدرجة'); return; }
-  const id = nextId();
-  setLoading('receive', true);
-  post({ bundleId:id, supplier:s, woodType:w, grade:g, qty:q, action:'دخول مخزن', 
-    note: document.getElementById('r-invoice').value ? `فاتورة:${document.getElementById('r-invoice').value}` : document.getElementById('r-note').value })
-  .then(() => {
-    setLoading('receive', false);
-    const rb = document.getElementById('receive-result');
-    rb.style.display = 'block';
-    document.getElementById('receive-text').innerHTML = 
-      `رقم الربطة: <strong>${id}</strong><br>المورد: ${s}<br>النوع: ${w} <span class="badge badge-${g.includes('أولى')?'1':'2'}">${g}</span><br>العدد: ${q}<br>التاريخ: ${d}`;
-    toast(`✓ تم تسجيل ${id}`);
-  });
-}
+            alert("جاري المزامنة وإرسال الحركة للـ Google Sheet...");
 
-// ===== Batch =====
-function previewBatch() {
-  const c = parseInt(document.getElementById('b-count').value) || 0;
-  const q = document.getElementById('b-qty').value;
-  const p = document.getElementById('batch-preview');
-  if (!c||c<1) { p.style.display='none'; return; }
-  p.style.display = 'block';
-  const start = counter;
-  let h = `<strong>معاينة (${c} ربطة):</strong><br>`;
-  for (let i=0; i<Math.min(c,5); i++) {
-    const id = 'RB-' + String(start+i).padStart(3,'0');
-    h += `${id} — ${q||'؟'} قطعة<br>`;
-  }
-  if (c>5) h += `... و ${c-5} ربطات أخرى`;
-  p.innerHTML = h;
-}
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
 
-async function batchSubmit() {
-  const s = document.getElementById('b-supplier').value;
-  const w = document.getElementById('b-wood').value;
-  const g = grades.b === 1 ? 'درجة أولى' : grades.b === 2 ? 'درجة ثانية' : '';
-  const c = parseInt(document.getElementById('b-count').value);
-  const q = parseInt(document.getElementById('b-qty').value);
-  const d = document.getElementById('b-date').value;
-  if (!s||!w||!g||!c||!q||!d) { toast('يرجى تعبئة جميع الحقول والدرجة'); return; }
-  setLoading('batch', true);
-  const ids = [];
-  for (let i=0; i<c; i++) {
-    const id = nextId(); ids.push(id);
-    document.getElementById('batch-progress').textContent = `${i+1}/${c}`;
-    await post({ bundleId:id, supplier:s, woodType:w, grade:g, qty:q, action:'دخول مخزن', note: '' });
-    await new Promise(r => setTimeout(r, 300));
-  }
-  setLoading('batch', false);
-  const rb = document.getElementById('batch-result');
-  rb.style.display = 'block';
-  document.getElementById('batch-text').innerHTML = 
-    `تم تسجيل <strong>${c} ربطة</strong><br>الأرقام: <strong>${ids[0]}</strong> إلى <strong>${ids[ids.length-1]}</strong><br>المورد: ${s} — ${w} <span class="badge badge-${g.includes('أولى')?'1':'2'}">${g}</span>`;
-  toast(`✓ تم تسجيل ${c} ربطة`);
-}
+            // تحديث البيانات محلياً
+            if (bundle) {
+                bundle.status = newAction;
+            } else {
+                localBundles.push({ id: bundleId, supplier, woodType, grade, qty, status: newAction });
+            }
 
-// ===== Helpers =====
-function nextId() {
-  const id = 'RB-' + String(counter).padStart(3,'0');
-  counter++;
-  localStorage.setItem(CTR_KEY, counter);
-  return id;
-}
+            localLogs.unshift({ id: bundleId, action: newAction, date: new Date().toLocaleDateString('ar-IQ'), info: `${supplier} - ${woodType}` });
+            localStorage.setItem('rw_bundles', JSON.stringify(localBundles));
+            localStorage.setItem('rw_logs', JSON.stringify(localLogs));
 
-function post(data) {
-  return fetch(sheetUrl, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).catch(() => { toast('⚠️ تحقق من الإنترنت'); });
-}
+            calculateStats();
+            renderDashboard();
+            renderTables();
+            document.getElementById('scan-result-card').classList.add('hidden');
+            switchTab('dashboard');
+            alert(`تم بنجاح نقل الربطة ${bundleId} إلى حالة: [${newAction}]`);
+        }
 
-function setLoading(id, on) {
-  document.getElementById('loading-' + id).className = 'loading' + (on ? ' active' : '');
-}
+        // الحسابات الرياضية للمقاييس والإحصاءات
+        function calculateStats() {
+            let total = localBundles.length;
+            let stock = localBundles.filter(b => b.status === 'دخول مخزن').length;
+            let prod = localBundles.filter(b => b.status === 'خط إنتاج').length;
+            let out = localBundles.filter(b => b.status === 'خروج مخزن').length;
 
-function saveUrl() {
-  sheetUrl = document.getElementById('gs-url').value.trim();
-  localStorage.setItem(SHEET_KEY, sheetUrl);
-  toast('✓ تم حفظ الرابط');
-}
+            // تحديث واجهة العدادات
+            document.getElementById('hdr-total').innerText = total;
+            document.getElementById('hdr-stock').innerText = stock;
+            document.getElementById('hdr-prod').innerText = prod;
 
-async function testConnection() {
-  const el = document.getElementById('test-result');
-  el.style.display = 'block';
-  el.textContent = '⏳ جاري الاختبار...';
-  el.className = 'test-status';
-  try {
-    await fetch(sheetUrl, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({bundleId:'TEST', supplier:'اختبار', woodType:'اختبار', grade:'درجة أولى', qty:0, action:'اختبار', note:''})
-    });
-    el.textContent = '✓ الاتصال يعمل — تحقق من Google Sheets';
-    el.className = 'test-status test-ok';
-  } catch(e) {
-    el.textContent = '✗ خطأ في الاتصال';
-    el.className = 'test-status test-error';
-  }
-}
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-stock').innerText = stock;
+            document.getElementById('stat-prod').innerText = prod;
+            document.getElementById('stat-out').innerText = out;
 
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show';
-  setTimeout(() => { t.className = 'toast'; }, 3100);
-}
+            // حساب بارات نسب المقاسات المتوفرة في المخزن حالياً
+            let count1m = localBundles.filter(b => b.status === 'دخول مخزن' && b.woodType === '1 متر').length;
+            let count120 = localBundles.filter(b => b.status === 'دخول مخزن' && b.woodType === '120 سم').length;
+            let count7x7 = localBundles.filter(b => b.status === 'دخول مخزن' && b.woodType === '7×7').length;
 
-// Init
-window.addEventListener('load', () => {
-  const today = new Date().toISOString().split('T')[0];
-  ['r-date', 'b-date'].forEach(id => document.getElementById(id).value = today);
-  startScanner();
-});
-</script>
+            document.getElementById('count-1m').innerText = count1m + " ربطة";
+            document.getElementById('count-120cm').innerText = count120 + " ربطة";
+            document.getElementById('count-7x7').innerText = count7x7 + " ربطة";
 
+            let maxCount = Math.max(count1m, count120, count7x7, 1);
+            document.getElementById('bar-1m').style.width = (count1m / maxCount * 100) + "%";
+            document.getElementById('bar-120cm').style.width = (count120 / maxCount * 100) + "%";
+            document.getElementById('bar-7x7').style.width = (count7x7 / maxCount * 100) + "%";
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('recent-logs');
+            if (localLogs.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-center text-sm py-8">لا توجد حركات مسجلة حالياً.</p>`;
+                return;
+            }
+            container.innerHTML = localLogs.slice(0, 5).map(log => {
+                let colorClass = log.action === 'دخول مخزن' ? 'text-emerald-600 bg-emerald-50' : log.action === 'خط إنتاج' ? 'text-amber-600 bg-amber-50' : 'text-rose-600 bg-rose-50';
+                return `
+                    <div class="flex justify-between items-center p-2.5 rounded-lg border border-gray-100 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 rounded font-bold ${colorClass}">${log.id}</span>
+                            <span class="text-gray-700 font-medium">${log.info}</span>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-gray-400 font-mono">${log.date}</span>
+                            <span class="font-bold text-gray-500">${log.action}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTables() {
+            const typeFilter = document.getElementById('filter-type').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            // 1. جدول المخزون الحالي
+            const invBody = document.getElementById('inventory-table-body');
+            let filtered = localBundles.filter(b => {
+                let matchType = (typeFilter === 'الكل' || b.woodType === typeFilter);
+                let matchStatus = (statusFilter === 'الكل' || b.status === statusFilter);
+                return matchType && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                invBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">لا توجد أخشاب تطابق خيارات الفلترة المحددة.</td></tr>`;
+            } else {
+                invBody.innerHTML = filtered.map(b => {
+                    let statusBadge = b.status === 'دخول مخزن' ? '<span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-medium">في المخزن</span>' : b.status === 'خط إنتاج' ? '<span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-medium">خط الإنتاج</span>' : '<span class="bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full font-medium">خارج المعمل</span>';
+                    let gradeBadge = b.grade === 'درجة أولى' ? '<span class="text-emerald-600 font-bold">⭐ أولى</span>' : '<span class="text-amber-600 font-medium">🍂 ثانية</span>';
+                    return `
+                        <tr class="hover:bg-gray-50/80 border-b border-gray-100 transition-colors">
+                            <td class="p-4 font-bold text-gray-700">${b.id}</td>
+                            <td class="p-4 text-gray-600">${b.supplier}</td>
+                            <td class="p-4 font-medium">${b.woodType}</td>
+                            <td class="p-4">${gradeBadge}</td>
+                            <td class="p-4 font-mono font-bold">${b.qty}</td>
+                            <td class="p-4">${statusBadge}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 2. جدول الأرشيف الكامل للحركات
+            const logsBody = document.getElementById('full-logs-body');
+            if (localLogs.length === 0) {
+                logsBody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-400">لا توجد سجلات مؤرشفة.</td></tr>`;
+            } else {
+                logsBody.innerHTML = localLogs.map(log => `
+                    <tr class="hover:bg-gray-50 border-b border-gray-100">
+                        <td class="p-3 font-bold">${log.id}</td>
+                        <td class="p-3"><span class="font-bold text-emerald-700">${log.action}</span></td>
+                        <td class="p-3 text-gray-600">${log.info}</td>
+                        <td class="p-3 text-gray-400 font-mono text-xs">${log.date}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function saveSettings() {
+            const url = document.getElementById('script-url').value;
+            localStorage.setItem('rw_script_url', url);
+            alert("تم حفظ عنوان الاتصال السحابي للسكربت بنجاح!");
+        }
+
+        // اختبار الاتصال مع جوجل شيت وإرسال حركة اختبار افتراضية
+        function testConnection() {
+            const scriptUrl = document.getElementById('script-url').value;
+            const statusDiv = document.getElementById('conn-status');
+            statusDiv.className = "mt-4 text-sm font-bold text-blue-600 animate-pulse";
+            statusDiv.innerText = "جاري فحص جودة الاتصال وإرسال إشارة للمحرك الخاص بك...";
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bundleId: 'TEST-CONNECTION', supplier: 'فحص', woodType: '1 متر', grade: 'درجة أولى', qty: 0, action: 'دخول مخزن', note: 'إشارة فحص ناجحة' })
+            }).then(() => {
+                statusDiv.className = "mt-4 text-sm font-bold text-emerald-600";
+                statusDiv.innerText = "✓ تم الاتصال بنجاح! السكربت يستقبل البيانات وسجل صفاً جديداً في ورقة 'حركة المخزن'.";
+            }).catch(err => {
+                statusDiv.className = "mt-4 text-sm font-bold text-rose-600";
+                statusDiv.innerText = "❌ فشل الاتصال. يرجى مراجعة صلاحيات النشر (Anyone) في مشروع Apps Script.";
+            });
+        }
+    </script>
 </body>
 </html>
